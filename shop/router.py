@@ -1,6 +1,6 @@
 from fastapi import APIRouter,HTTPException,Path,Query
 from shop.schemas import ShopResponse,ShopPageResponse,ShopCreate
-from shop.service import get_shop_by_id,get_shops
+from shop.service import get_shop_by_id,get_shops,create_shop as create_shop_service
 router = APIRouter(
   prefix="/shops",
   tags=["商铺"],
@@ -19,6 +19,8 @@ def get_shop_list(
 ):
     result = get_shops(page=page, page_size=page_size, keyword=keyword)
     return ShopPageResponse(**result)
-@router.post("/", response_model=ShopCreate)
+@router.post("/", response_model=ShopResponse, status_code=201)
 def create_shop(shop_data: ShopCreate):
-    return shop_data
+    shop = create_shop_service(name=shop_data.name, address=shop_data.address, phone=shop_data.phone)
+    return ShopResponse(**shop)
+

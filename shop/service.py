@@ -44,3 +44,13 @@ def get_shops(page: int, page_size: int,keyword:str | None = None) -> dict:
         "page_size": page_size,
         "items": all_shops[start:end],
     }
+def create_shop(name: str, address: str, phone: str) -> dict:
+    shop_id = max(shops.keys(),default=0) + 1
+    shop = {
+        "id": shop_id,
+        "name": name,
+        "address": address,
+        "phone": phone,
+    }
+    shops[shop_id] = shop
+    return shop
