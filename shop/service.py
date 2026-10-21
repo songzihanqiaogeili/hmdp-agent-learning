@@ -14,6 +14,7 @@ def get_shops(page: int, page_size: int,keyword:str | None = None) -> dict:
         "page_size": page_size,
         "items": result["items"],
     }
+<<<<<<< HEAD
 def require_shop_owner(shop: dict, user_id: int) -> None:
     """Exercise: understand and rewrite this ownership check yourself."""
     if shop["owner_id"] != user_id:
@@ -44,3 +45,15 @@ def change_shop_status(shop_id: int, status: int, user_id: int) -> dict | None:
     require_shop_owner(shop, user_id)
     update_shop_status_record(shop_id, status, user_id)
     return find_shop_by_id(shop_id)
+=======
+def create_shop(name: str, address: str, phone: str) -> dict:
+    shop_id = max(shops.keys(),default=0) + 1
+    shop = {
+        "id": shop_id,
+        "name": name,
+        "address": address,
+        "phone": phone,
+    }
+    shops[shop_id] = shop
+    return shop
+>>>>>>> 9d74fbab0a7fa26d958a6b99851270e3417c5ee0

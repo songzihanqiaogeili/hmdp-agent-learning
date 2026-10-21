@@ -1,5 +1,6 @@
 from fastapi import APIRouter,HTTPException,Path,Query,Depends
 from shop.schemas import ShopResponse,ShopPageResponse,ShopCreate
+<<<<<<< HEAD
 from shop.service import get_shop_by_id,get_shops
 from shop.service import create_shop as create_shop_service
 from shop.service import update_shop as update_shop_service
@@ -7,6 +8,9 @@ from shop.schemas import ShopUpdate
 from shop.schemas import ShopStatusUpdate
 from shop.service import change_shop_status
 from user.dependencies import get_current_user
+=======
+from shop.service import get_shop_by_id,get_shops,create_shop as create_shop_service
+>>>>>>> 9d74fbab0a7fa26d958a6b99851270e3417c5ee0
 router = APIRouter(
   prefix="/shops",
   tags=["商铺"],
@@ -26,6 +30,7 @@ def get_shop_list(
     result = get_shops(page=page, page_size=page_size, keyword=keyword)
     return ShopPageResponse(**result)
 @router.post("/", response_model=ShopResponse, status_code=201)
+<<<<<<< HEAD
 def create_shop(shop_data: ShopCreate, current_user: dict = Depends(get_current_user)):
     shop = create_shop_service(
         name=shop_data.name,
@@ -72,3 +77,9 @@ def update_shop_status(
     if shop is None:
         raise HTTPException(status_code=404, detail="商铺不存在")
     return ShopResponse(**shop)
+=======
+def create_shop(shop_data: ShopCreate):
+    shop = create_shop_service(name=shop_data.name, address=shop_data.address, phone=shop_data.phone)
+    return ShopResponse(**shop)
+
+>>>>>>> 9d74fbab0a7fa26d958a6b99851270e3417c5ee0
