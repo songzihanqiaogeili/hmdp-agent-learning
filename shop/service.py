@@ -1,46 +1,46 @@
-shops = {
-    1: {
-        "id": 1,
-        "name": "老街火锅",
-        "address": "人民路 18 号",
-        "phone": "13800000000",
-    },
-    2: {
-        "id": 2,
-        "name": "巷口咖啡",
-        "address": "建设路 26 号",
-        "phone": "13800000001",
-    },
-    3: {
-    "id": 3,
-    "name": "川味火锅",
-    "address": "中山路 30 号",
-    "phone": "010-11223344",
-    },
-}
-
-
+from shop.repository import find_shop_by_id, insert_shop, find_shops
+from shop.repository import update_shop as update_shop_record   
+from shop.repository import update_shop_status as update_shop_status_record
 def get_shop_by_id(shop_id: int) -> dict | None:
-    return shops.get(shop_id)
-def get_shop_id(shop: dict) -> int:
-    return shop["id"]
+    return find_shop_by_id(shop_id)
 def get_shops(page: int, page_size: int,keyword:str | None = None) -> dict:
-    matched_shops = []
-    for shop in shops.values():
-        if keyword is None or keyword in shop["name"]:
-            matched_shops.append(shop)
-    all_shops = sorted(
-        matched_shops,
-        key=get_shop_id,
-    )
-    total = len(all_shops)
-    total_pages = (total + page_size - 1) // page_size
-    start = (page - 1) * page_size
-    end = start + page_size
+    result=find_shops(page=page, page_size=page_size, keyword=keyword)
+    total=result["total"]
+    total_pages=(total+page_size-1)//page_size
     return {
         "total": total,
         "total_pages": total_pages,
         "page": page,
         "page_size": page_size,
-        "items": all_shops[start:end],
+        "items": result["items"],
     }
+def require_shop_owner(shop: dict, user_id: int) -> None:
+    """Exercise: understand and rewrite this ownership check yourself."""
+    if shop["owner_id"] != user_id:
+        raise PermissionError("只能修改自己的商铺")
+
+
+def create_shop(name: str, address: str, phone: str, user_id: int) -> dict:
+    shop_id = insert_shop(name, address, phone, user_id)
+    shop = find_shop_by_id(shop_id)
+    if shop is None:
+        raise RuntimeError("商铺创建后未能查询到")
+    return shop
+
+
+def update_shop(shop_id: int, name: str, address: str, phone: str, user_id: int) -> dict | None:
+    shop = find_shop_by_id(shop_id)
+    if shop is None:
+        return None
+    require_shop_owner(shop, user_id)
+    update_shop_record(shop_id, name, address, phone, user_id)
+    return find_shop_by_id(shop_id)
+
+
+def change_shop_status(shop_id: int, status: int, user_id: int) -> dict | None:
+    shop = find_shop_by_id(shop_id)
+    if shop is None:
+        return None
+    require_shop_owner(shop, user_id)
+    update_shop_status_record(shop_id, status, user_id)
+    return find_shop_by_id(shop_id)
